@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; color: #334155; line-height: 1.6; }
+        .wrapper { max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; }
+        .header { background-color: #064e3b; color: #ffffff; padding: 16px; border-radius: 6px; text-align: center; }
+        .amount { font-size: 24px; font-weight: bold; color: #064e3b; margin: 16px 0; }
+        .bank-details { bg-color: #f8fafc; border: 1px dashed #cbd5e1; padding: 16px; border-radius: 6px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="header">
+            <h2>DINA CATERING & RENTALS</h2>
+        </div>
+        <p>Hello <strong>{{ client_name }}</strong>,</p>
+        <p>Our management team has reviewed your booking request for your upcoming <strong>{{ event_type }}</strong> on {{ event_date }}. Below is your officially calculated package total:</p>
+        
+        <div class="amount">Total Balance Due: ₦{{ total_amount }}</div>
+        
+        <p>To confirm this booking and lock your date securely into our schedule, please make a direct payment or bank transfer to the account below:</p>
+        
+        <div class="bank-details">
+            <h3>Bank Account Information</h3>
+            <p><strong>Bank:</strong> {{ bank_name }}</p>
+            <p><strong>Account Name:</strong> {{ account_name }}</p>
+            <p><strong>Account Number:</strong> {{ account_number }}</p>
+        </div>
+        
+        <p>After paying, kindly upload your receipt or contact us directly on WhatsApp to clear your booking for scheduling validation. Thank you for choosing Dina Catering!</p>
+    </div>
+</body>
+</html>

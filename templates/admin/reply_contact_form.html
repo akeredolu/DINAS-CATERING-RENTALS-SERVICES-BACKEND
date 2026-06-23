@@ -1,0 +1,29 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<div id="content-main" style="max-w: 800px; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-top: 20px;">
+    <h2 style="font-weight: 800; color: #1e293b; text-transform: uppercase; letter-spacing: -0.025em; border-bottom: 2px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 20px;">Compose Message Reply</h2>
+    
+    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 25px;">
+        <p style="margin: 4px 0; font-size: 13px; color: #64748b;"><strong>From Customer:</strong> {{ original.name }} ({{ original.email }})</p>
+        <p style="margin: 4px 0; font-size: 13px; color: #64748b;"><strong>Original Subject:</strong> {{ original.subject }}</p>
+        <p style="margin: 12px 0 4px 0; font-size: 13px; color: #1e293b; background: #fff; padding: 12px; border-radius: 6px; border: 1px solid #cbd5e1; white-space: pre-wrap;">{{ original.message }}</p>
+    </div>
+
+    <form method="post" style="space-y: 15px;">
+        {% csrf_token %}
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 5px; font-size: 12px; color: #334155; text-transform: uppercase;">Email Subject Line:</label>
+            <input type="text" name="reply_subject" value="Re: {{ original.subject }}" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1; outline: none;" required>
+        </div>
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 5px; font-size: 12px; color: #334155; text-transform: uppercase;">Write Your Response Text:</label>
+            <textarea name="reply_message" rows="8" placeholder="Type the message body details you would like to securely send back to your customer profile here..." style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #cbd5e1; outline: none; font-family: inherit; resize: vertical;" required></textarea>
+        </div>
+        <div>
+            <button type="submit" style="background-color: #1e3a8a; color: white; border: none; padding: 12px 24px; font-weight: bold; border-radius: 6px; cursor: pointer; text-transform: uppercase; font-size: 12px; tracking-wider: 0.05em;">✈️ Send Out Brevo API Email</button>
+            <a href="../" style="margin-left: 10px; color: #64748b; text-decoration: none; font-size: 12px; font-weight: bold; uppercase: true;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
