@@ -17,8 +17,19 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+from django.http import JsonResponse
+
+# A simple, clean message for your API homepage
+def api_root_view(request):
+    return JsonResponse({
+        "status": "online",
+        "project": "Dina Catering & Rentals API Backend",
+        "message": "To access data, use the specific API endpoints or visit the admin portal.",
+        "admin_portal": "/admin/"
+    })
 
 urlpatterns = [
+    path('', api_root_view),
     path('admin/', admin.site.urls),
     path('api/', include('services.urls')),
 ]
