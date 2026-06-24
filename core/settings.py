@@ -1,12 +1,12 @@
 import os
 from pathlib import Path
-
-import environ
 import dj_database_url
+import environ
 
+# Cloudinary imports are handled under the hood by django-cloudinary-storage
 import cloudinary
-import cloudinary.uploader
 import cloudinary.api
+import cloudinary.uploader
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -14,9 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ENVIRONMENT VARIABLES
 # ==========================================================
 
-env = environ.Env(
-    DEBUG=(bool, False)
-)
+env = environ.Env(DEBUG=(bool, False))
 
 environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
@@ -34,6 +32,7 @@ ALLOWED_HOSTS = [
     "dinacatering.com",
     "www.dinacatering.com",
     "api.dinacatering.com",
+    "dinas-catering-rentals-services.onrender.com",
 ]
 
 # ==========================================================
@@ -41,22 +40,18 @@ ALLOWED_HOSTS = [
 # ==========================================================
 
 INSTALLED_APPS = [
+    # Must be placed BEFORE staticfiles to overwrite collectstatic management commands
     "cloudinary_storage",
-    
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     # Third-party
     "rest_framework",
     "corsheaders",
     "cloudinary",
-    
-    
-
     # Local apps
     "services",
 ]
@@ -68,6 +63,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # Added for optimized asset handling in production
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -104,15 +100,7 @@ WSGI_APPLICATION = "core.wsgi.application"
 # DATABASE
 # ==========================================================
 
-DATABASES = {
-    "default": dj_database_url.config(
-        default=env("DATABASE_URL")
-    )
-}
-
-# ==========================================================
-# CORS
-# ==========================================================
+DATABASES = {"default": dj_database_url.config(default=env("DATABASE_URL"))}
 
 # ==========================================================
 # CORS CONFIGURATION (Fixed for Cookie/Credential Security)
@@ -123,11 +111,13 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "http://192.168.43.200:3000", 
+    "http://192.168.43.200:3000",
+    "https://dinacatering.com",
+    "https://dinacatering.com",
 ]
 
 # ==========================================================
-# CLOUDINARY
+# CLOUDINARY STORAGES (Legacy layout for django-cloudinary-storage compatibility)
 # ==========================================================
 
 CLOUDINARY_STORAGE = {
@@ -136,8 +126,9 @@ CLOUDINARY_STORAGE = {
     "API_SECRET": env("CLOUDINARY_API_SECRET"),
 }
 
-DEFAULT_FILE_STORAGE = (
-    "cloudinary_storage.storage.MediaCloudinaryStorage"
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+STATICFILES_STORAGE = (
+    "cloudinary_storage.storage.StaticHashedCloudinaryStorage"  # Fixed AttributeError
 )
 
 # =========================
@@ -148,7 +139,7 @@ BREVO_SENDER_EMAIL = env("BREVO_SENDER_EMAIL")
 BREVO_SENDER_NAME = env("BREVO_SENDER_NAME")
 
 # Matches the verified sender required by your utils/brevo.py script
-DEFAULT_FROM_EMAIL = env("BREVO_SENDER_EMAIL") 
+DEFAULT_FROM_EMAIL = env("BREVO_SENDER_EMAIL")
 
 # ==========================================================
 # PASSWORD VALIDATORS
@@ -156,20 +147,16 @@ DEFAULT_FROM_EMAIL = env("BREVO_SENDER_EMAIL")
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME":
-        "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        "NAME":
-        "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        "NAME":
-        "django.contrib.auth.password_validation.CommonPasswordValidator",
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        "NAME":
-        "django.contrib.auth.password_validation.NumericPasswordValidator",
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -186,14 +173,17 @@ USE_I18N = True
 USE_TZ = True
 
 # ==========================================================
-# STATIC FILES
+# STATIC & MEDIA FILES
 # ==========================================================
 
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+# Add this line so Django looks inside your project folders for files
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # ==========================================================
 # DEFAULT PRIMARY KEY
@@ -220,3 +210,17 @@ if not DEBUG:
     #     "https",
     # )
 
+# ==========================================================
+# CLOUDINARY MEDIA STORAGE (Decoupled Setup)
+# ==========================================================
+
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": env("CLOUDINARY_CLOUD_NAME"),
+    "API_KEY": env("CLOUDINARY_API_KEY"),
+    "API_SECRET": env("CLOUDINARY_API_SECRET"),
+}
+
+# Strictly route dynamic uploads to Cloudinary
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+
+MEDIA_URL = "/media/"
