@@ -181,11 +181,11 @@ STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
-    # CHANGED: Use the standard Compressed backend to avoid strict missing file crashes
+    # Force WhiteNoise to use the completely raw file storage backend
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+        "BACKEND": "whitenoise.storage.StaticFilesStorage",
     },
 }
 
-# Update this line to match as well:
-STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+# The bypass fix line:
+STATICFILES_STORAGE = "whitenoise.storage.StaticFilesStorage"
