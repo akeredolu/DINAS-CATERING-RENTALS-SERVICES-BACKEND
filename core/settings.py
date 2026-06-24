@@ -32,8 +32,7 @@ ALLOWED_HOSTS = [
     "dinacatering.com",
     "www.dinacatering.com",
     "api.dinacatering.com",
-    "dinas-catering-rentals-services-backend.onrender.com/",
-    
+    "dinas-catering-rentals-services-backend.onrender.com",  
 ]
 
 # ==========================================================
