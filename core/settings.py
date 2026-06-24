@@ -177,13 +177,15 @@ if not DEBUG:
 # STORAGES (Django 6.0+ Unified Standard)
 # ==========================================================
 STORAGES = {
+    # Media goes to Cloudinary
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
+    # CHANGED: Use the standard Compressed backend to avoid strict missing file crashes
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
 
-# Add this line below to trick django-cloudinary-storage and stop the crash:
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# Update this line to match as well:
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
