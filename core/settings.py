@@ -156,7 +156,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # ==========================================================
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_DIRS = [BASE_DIR / "static"]
+#STATICFILES_DIRS = [BASE_DIR / "static"]
 
 MEDIA_URL = "/media/"
 
@@ -171,3 +171,19 @@ if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    
+
+# ==========================================================
+# STORAGES (Django 6.0+ Unified Standard)
+# ==========================================================
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
+# Add this line below to trick django-cloudinary-storage and stop the crash:
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
