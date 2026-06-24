@@ -91,7 +91,13 @@ WSGI_APPLICATION = "core.wsgi.application"
 # ==========================================================
 # DATABASE
 # ==========================================================
-DATABASES = {"default": dj_database_url.config(default=env("DATABASE_URL"))}
+DATABASES = {
+    "default": dj_database_url.config(
+        default=env("DATABASE_URL"),
+        conn_max_age=600,  # Keeps database connections alive for 10 minutes
+        ssl_require=True   # Enforces secure SSL connections to Render Postgres
+    )
+}
 
 # ==========================================================
 # CORS CONFIGURATION
@@ -115,18 +121,21 @@ CLOUDINARY_STORAGE = {
 }
 
 # ==========================================================
-# STORAGES (Django 6.0+ Unified Standard)
+# STORAGES (Django 6.0+ Unified Standard - Cleaned & De-duplicated)
 # ==========================================================
 STORAGES = {
     # Media goes to Cloudinary
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
-    # Static files go through WhiteNoise for production speed and reliability
+    # Force WhiteNoise to use standard file storage backend (safest from FileNotFoundError checks)
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "whitenoise.storage.StaticFilesStorage",
     },
 }
+
+# The legacy compatibility bypass for django-cloudinary-storage
+STATICFILES_STORAGE = "whitenoise.storage.StaticFilesStorage"
 
 # ==========================================================
 # EMAIL CONFIGURATION (Brevo)
@@ -156,7 +165,6 @@ AUTH_PASSWORD_VALIDATORS = [
 # ==========================================================
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
-#STATICFILES_DIRS = [BASE_DIR / "static"]
 
 MEDIA_URL = "/media/"
 
@@ -171,21 +179,3 @@ if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-    
-
-# ==========================================================
-# STORAGES (Django 6.0+ Unified Standard)
-# ==========================================================
-STORAGES = {
-    # Media goes to Cloudinary
-    "default": {
-        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
-    },
-    # Force WhiteNoise to use the completely raw file storage backend
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.StaticFilesStorage",
-    },
-}
-
-# The bypass fix line:
-STATICFILES_STORAGE = "whitenoise.storage.StaticFilesStorage"
