@@ -16,20 +16,36 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env(DEBUG=(bool, False))
 environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
-# ==========================================================
-# CORE SETTINGS
-# ==========================================================
 SECRET_KEY = env("SECRET_KEY")
 DEBUG = env("DEBUG")
 
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    "dinacatering.com",
-    "www.dinacatering.com",
-    "api.dinacatering.com",
-    "dinas-catering-rentals-services-backend.onrender.com",  
+# ==========================================================
+# CORS CONFIGURATION
+# ==========================================================
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://192.168.43.200:3000",
+    "https://dinacatering.com",
+    "https://www.dinacatering.com",
+    "https://dinas-catering-rentals-services-fro.vercel.app",  
 ]
+
+# Pull dynamically if added via Render dashboard later
+FRONTEND_URL = env("FRONTEND_URL", default=None)
+if FRONTEND_URL and FRONTEND_URL not in CORS_ALLOWED_ORIGINS:
+    CORS_ALLOWED_ORIGINS.append(FRONTEND_URL)
+
+
+    # Required to prevent 403 Forbidden errors on decoupled Next.js forms/auth POST requests
+    CSRF_TRUSTED_ORIGINS = [
+        "https://dinacatering.com",
+        "https://www.dinacatering.com",
+        "https://dinas-catering-rentals-services-fro.vercel.app",
+        "https://dinas-catering-rentals-services-backend.onrender.com"
+    ]
 
 # ==========================================================
 # APPLICATIONS
@@ -94,22 +110,13 @@ WSGI_APPLICATION = "core.wsgi.application"
 DATABASES = {
     "default": dj_database_url.config(
         default=env("DATABASE_URL"),
-        conn_max_age=600,  # Keeps database connections alive for 10 minutes
-        ssl_require=True   # Enforces secure SSL connections to Render Postgres
+        conn_max_age=600,  
+        ssl_require=True   
     )
 }
 
-# ==========================================================
-# CORS CONFIGURATION
-# ==========================================================
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://192.168.43.200:3000",
-    "https://dinacatering.com",
-    "https://www.dinacatering.com",
-]
+#DATABASES = {"default": dj_database_url.config(default=env("DATABASE_URL"))}
+
 
 # ==========================================================
 # CLOUDINARY CONFIGURATION
@@ -179,3 +186,10 @@ if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+
+# ==========================================================
+# PAYSTACK PAYMENT GATEWAY CONFIGURATION
+# ==========================================================
+PAYSTACK_SECRET_KEY = env("PAYSTACK_SECRET_KEY")
+PAYSTACK_VERIFY_URL = env("PAYSTACK_VERIFY_URL", default="https://api.paystack.co/transaction/verify/")
