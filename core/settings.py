@@ -20,6 +20,16 @@ SECRET_KEY = env("SECRET_KEY")
 DEBUG = env("DEBUG")
 
 # ==========================================================
+# HOSTS & SECURITY CONFIGURATION
+# ==========================================================
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'dinas-catering-rentals-services-backend.onrender.com', # Your backend host URL
+    '.onrender.com',                                         # Catch-all wildcard for Render subdomains
+]
+
+# ==========================================================
 # CORS CONFIGURATION
 # ==========================================================
 CORS_ALLOW_CREDENTIALS = True
@@ -30,22 +40,23 @@ CORS_ALLOWED_ORIGINS = [
     "http://192.168.43.200:3000",
     "https://dinacatering.com",
     "https://www.dinacatering.com",
-    "https://dinas-catering-rentals-services-fro.vercel.app",  
+    "https://dinas-catering-rentals-services-fro.vercel.app", # Added your exact Vercel staging domain here
 ]
 
-# Pull dynamically if added via Render dashboard later
 FRONTEND_URL = env("FRONTEND_URL", default=None)
 if FRONTEND_URL and FRONTEND_URL not in CORS_ALLOWED_ORIGINS:
     CORS_ALLOWED_ORIGINS.append(FRONTEND_URL)
 
+# ==========================================================
+# CSRF TRUSTED ORIGINS (Moved completely out of the if-block)
+# ==========================================================
 
-    # Required to prevent 403 Forbidden errors on decoupled Next.js forms/auth POST requests
-    CSRF_TRUSTED_ORIGINS = [
-        "https://dinacatering.com",
-        "https://www.dinacatering.com",
-        "https://dinas-catering-rentals-services-fro.vercel.app",
-        "https://dinas-catering-rentals-services-backend.onrender.com"
-    ]
+CSRF_TRUSTED_ORIGINS = [
+    "https://dinacatering.com",
+    "https://www.dinacatering.com",
+    "https://dinas-catering-rentals-services-fro.vercel.app",
+    "https://dinas-catering-rentals-services-backend.onrender.com"
+]
 
 # ==========================================================
 # APPLICATIONS
